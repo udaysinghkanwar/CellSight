@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+.env/
+
+# macOS
+.DS_Store
+
+# ClickHouse data (if you add a volume)
+clickhouse-data/
+
+# Logs
+*.log
+
+# IDEs
+.vscode/
+.idea/
