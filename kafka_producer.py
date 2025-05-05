@@ -33,7 +33,7 @@ def create_producer():
         logger.error(f"Error creating Kafka producer: {e}")
         return None
 
-def produce_data(producer, topic_name="battery-metrics", count=100, delay=0.05):
+def produce_data(producer, topic_name="battery-metrics-v2", count=100, delay=0.05):
     """Generate and send battery manufacturing data to Kafka"""
     if not producer:
         return

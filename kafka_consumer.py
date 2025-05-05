@@ -3,6 +3,7 @@ from kafka import KafkaConsumer
 import json
 from clickhouse_driver import Client
 import logging
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -14,21 +15,26 @@ def process_message(msg, clickhouse_client):
         # Parse the JSON data
         data = msg.value
         
+        # Parse timestamp string to datetime object
+        ts = data['timestamp']
+        if isinstance(ts, str):
+            ts = datetime.fromisoformat(ts)
+
         # Extract the fields we want to store
         record = (
-            data['timestamp'],
+            ts,
             data['cell_id'],
             data['production_line'],
             data['measurements']['temperature'],
             data['measurements']['voltage'],
             data['measurements']['internal_resistance'],
-            data['measurements']['capacity'], 
+            int(data['measurements']['capacity']),
             data['measurements']['thickness'],
             data['measurements']['weight'],
             data['process_parameters']['anode_coating_thickness'],
             data['process_parameters']['cathode_coating_thickness'],
             data['process_parameters']['electrolyte_volume'],
-            data['process_parameters']['pressing_force'],
+            int(data['process_parameters']['pressing_force']),
             data['quality_checks']['visual_inspection'],
             data['quality_checks']['leakage_test'],
             data['quality_checks']['dimension_check'],
@@ -56,7 +62,7 @@ def run_consumer():
     
     # Create Kafka consumer
     consumer = KafkaConsumer(
-        'battery-metrics',
+        'battery-metrics-v2',
         bootstrap_servers=['localhost:9092'],
         auto_offset_reset='earliest',
         value_deserializer=lambda m: json.loads(m.decode('utf-8')),
